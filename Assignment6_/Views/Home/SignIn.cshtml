@@ -1,0 +1,139 @@
+﻿@{
+    ViewBag.Title = "SignIn";
+    Layout = "~/Views/Shared/MyLayout.cshtml";
+}
+
+
+
+@section Scripts
+{
+    <script>
+        function relocate() {
+            location.href = "/Home/SignUp";
+        }
+        function validateEmail(email) {
+            var re = /^([\w-]+(?:\.[\w-]+)*)@@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+            return re.test(email);
+        }
+        function ValidatePass(pass) {
+            if (pass == "") {
+                return false;
+            }
+            if (pass.length < 5) {
+                return false;
+            }
+            return true;
+        }
+        function Validate(mail, pass) {
+            if (validateEmail(mail) == true && ValidatePass(pass) == true)
+                return true;
+            return false;
+        }
+        $(function () {
+
+            $("#emailDiv").focusout(function () {
+                var email = $("#emal").val();
+                    if (validateEmail(email) == false) {
+                        $("#emailDiv").removeClass("has-success");
+                        $("#email-span").removeClass("glyphicon-ok");
+                        $("#emailDiv").addClass("has-error");
+                        $("#email-span").addClass("glyphicon-remove");
+                        $("#email-span").css("color", "red");
+                    }
+                    else {
+                        $("#emailDiv").removeClass("has-error");
+                        $("#email-span").removeClass("glyphicon-remove")
+                        $("#emailDiv").addClass("has-success");
+                        $("#email-span").addClass("glyphicon-ok");
+                        $("#email-span").css("color", "green");
+                    }
+            });
+
+            $("#passDiv").focusout(function () {
+                var pass = $("#pass").val();
+                    if (ValidatePass(pass) == false) {
+                        $("#passlDiv").removeClass("has-success");
+                        $("#pass-span").removeClass("glyphicon-ok");
+                        $("#passDiv").addClass("has-error");
+                        $("#pass-span").addClass("glyphicon-remove");
+                        $("#pass-span").css("color", "red");
+                    }
+                    else {
+                        $("#passDiv").removeClass("has-error");
+                        $("#pass-span").removeClass("glyphicon-remove")
+                        $("#passDiv").addClass("has-success");
+                        $("#pass-span").addClass("glyphicon-ok");
+                        $("#pass-span").css("color", "green");
+                    }
+            });
+
+            $("#submitBtn").click(function () {
+                var email = $("#emal").val();
+                var pass = $("#pass").val();
+                var emailTest = validateEmail(email);
+                if (emailTest == false) {
+                    alert("Invalid Email Formate");
+                    return false;
+                }
+                var passTest = ValidatePass(pass);
+                if (passTest == false) {
+                    alert("Invalid Password Formate");
+                    return false;
+                }
+                var d = { "login": email, "password": pass, };
+                var settings = {
+                    type: "POST",
+                    dataType: "json",
+                    url: "/api/User/Validate",
+                    data:d,
+                    success: function (resp) {
+                        if (resp.valid == true) {
+                            location.href = resp.urlToRedirect;
+                            alert(resp.message);
+                        }
+                        else {
+                            alert(resp.message);
+                        }
+                    },
+                    error: function (e) {
+                        alert("Error......");
+                    }
+                };
+                $.ajax(settings);
+                return false;
+            });
+        });
+        
+    </script>
+}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-4 col-lg-offset-4" style="border:solid 1px black;border-radius:5px;padding:20px">
+            <h2 class="text-center">Sign In</h2>
+            <div class="form-group has-feedback" id="emailDiv">
+                <label for="name">Email</label>
+                <span class="glyphicon form-control-feedback" id="email-span"></span>
+                <input type="text" class="form-control" id="emal">
+            </div>
+            <div class="form-group has-feedback" id="passDiv">
+                <label>Password</label>
+                <span class="glyphicon form-control-feedback" id="pass-span"></span>
+                <input type="password" id="pass" class="form-control" style="font-size:20px" />
+            </div>
+            <div>
+                <input type="submit" id="submitBtn" value="Sign In" class="btn btn-primary btn-block" />
+            </div>
+            <div class="text-right">
+                <a href="/Home/ForgotPassword">Forgot Password?</a><br />
+            </div>
+            <div class="form-group">
+                <div class="text-center">
+                    <span style="color:green;font-size:20px">Not A Member</span><br />
+                </div>
+                <div>
+                    <input type="button" class="btn btn-block btn-success" value="Sign Up" onclick="relocate()">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
